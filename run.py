@@ -46,6 +46,7 @@ class ChangeForm(Form):
 class ProjectView(ModelView):
     # don't call the custom page list.html as you'll get a recursive call
     list_template = 'admin/model/custom_list.html'
+    page_size = 10
 
     @action('change_cost', 'Change Cost', 'Are you sure you want to change Cost for selected projects?')
     def action_change_cost(self, ids):
