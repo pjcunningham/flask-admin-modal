@@ -1,0 +1,32 @@
+{% extends 'admin/model/list.html' %}
+
+{% block body %}
+    {{ super() }}
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="changeModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <a href="{{ url }}" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+            <h4 class="modal-title">Change Project Costs</h4>
+          </div>
+          <div class="modal-body">
+              {% if change_modal %}
+                  {{ lib.render_form(change_form, action=url_for('project.update_view', url=url)) }}
+              {% endif %}
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock body %}
+
+{% block tail %}
+    {{ super() }}
+    <script>
+        {% if change_modal %}
+            $(document).ready(function(){
+                $("#changeModal").modal('show');
+            });
+        {% endif %}
+    </script>
+{% endblock tail %}
