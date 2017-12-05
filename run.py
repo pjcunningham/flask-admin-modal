@@ -1,7 +1,7 @@
 import base64
 import random
 import string
-from flask import Flask, redirect, url_for, request, render_template, g
+from flask import Flask, redirect, request
 from flask_admin.actions import action
 from flask_admin.helpers import get_redirect_target
 from flask_sqlalchemy import SQLAlchemy
