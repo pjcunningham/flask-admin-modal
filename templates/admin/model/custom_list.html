@@ -12,7 +12,7 @@
           </div>
           <div class="modal-body">
               {% if change_modal %}
-                  {{ lib.render_form(change_form, action=url_for('project.update_view', url=url)) }}
+                  {{ lib.render_form(change_form, cancel_url=url, action=url_for('project.update_view', url=url)) }}
               {% endif %}
           </div>
         </div><!-- /.modal-content -->

@@ -1,7 +1,8 @@
+import sys
 import base64
 import random
 import string
-from flask import Flask, redirect, request
+from flask import Flask, redirect, request, flash
 from flask_admin.actions import action
 from flask_admin.helpers import get_redirect_target
 from flask_sqlalchemy import SQLAlchemy
@@ -48,7 +49,8 @@ class ProjectView(ModelView):
     list_template = 'admin/model/custom_list.html'
     page_size = 10
 
-    @action('change_cost', 'Change Cost', 'Are you sure you want to change Cost for selected projects?')
+    # omitting the third argument suppresses the confirmation alert
+    @action('change_cost', 'Change Cost')
     def action_change_cost(self, ids):
         url = get_redirect_target() or self.get_url('.index_view')
         return redirect(url, code=307)
@@ -79,12 +81,16 @@ class ProjectView(ModelView):
                 _update_mappings = [{'id': rowid, 'cost': cost} for rowid in ids]
                 db.session.bulk_update_mappings(Project, _update_mappings)
                 db.session.commit()
+                flash("Set cost for {} record{} to {}."
+                      .format(len(ids), 's' if len(ids) > 1 else '', cost),
+                      category='info')
                 return redirect(url)
             else:
                 # Form didn't validate
-                # todo need to display the error message in the pop-up
-                print change_form.errors
-                return redirect(url, code=307)
+                self._template_args['url'] = url
+                self._template_args['change_form'] = change_form
+                self._template_args['change_modal'] = True
+                return self.index_view()
 
 
 admin = Admin(app, template_mode="bootstrap3")
@@ -108,4 +114,10 @@ def build_sample_db():
 
 if __name__ == '__main__':
     build_sample_db()
-    app.run(port=5000, debug=True)
+
+    try:
+        port = int(sys.argv[1])
+    except (IndexError, ValueError):
+        port = 5000
+
+    app.run(port=port, debug=True)
