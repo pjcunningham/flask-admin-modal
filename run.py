@@ -61,9 +61,8 @@ class ProjectView(ModelView):
             url = get_redirect_target() or self.get_url('.index_view')
             ids = request.form.getlist('rowid')
             joined_ids = ','.join(ids)
-            encoded_ids = base64.b64encode(joined_ids)
             change_form = ChangeForm()
-            change_form.ids.data = encoded_ids
+            change_form.ids.data = joined_ids
             self._template_args['url'] = url
             self._template_args['change_form'] = change_form
             self._template_args['change_modal'] = True
@@ -75,14 +74,12 @@ class ProjectView(ModelView):
             url = get_redirect_target() or self.get_url('.index_view')
             change_form = ChangeForm(request.form)
             if change_form.validate():
-                decoded_ids = base64.b64decode(change_form.ids.data)
-                ids = decoded_ids.split(',')
+                ids = change_form.ids.data.split(',')
                 cost = change_form.cost.data
                 _update_mappings = [{'id': rowid, 'cost': cost} for rowid in ids]
                 db.session.bulk_update_mappings(Project, _update_mappings)
                 db.session.commit()
-                flash("Set cost for {} record{} to {}."
-                      .format(len(ids), 's' if len(ids) > 1 else '', cost),
+                flash(f"Set cost for {len(ids)} recordess's' if len(ids) > 1 else ''} to {cost}.",
                       category='info')
                 return redirect(url)
             else:
