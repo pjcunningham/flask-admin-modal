@@ -17,6 +17,12 @@ virtualenv venv && source venv/bin/activate
 # fetch dependencies; add '--user' if not using a virtualenv
 pip install -r requirements.txt
 
-# launch app w/ optional port number (default: 5000)
-python run.py  # 8080
+# Set Flask environment variable e.g. Windows CMD
+set FLASK_APP=run.py
+
+# Create/Populate data
+flask create-database
+
+# launch app
+flask run
 ```
