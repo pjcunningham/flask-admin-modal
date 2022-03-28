@@ -3,6 +3,7 @@ import base64
 import random
 import string
 from flask import Flask, redirect, request, flash
+from flask.cli import click, with_appcontext
 from flask_admin.actions import action
 from flask_admin.helpers import get_redirect_target
 from flask_sqlalchemy import SQLAlchemy
@@ -10,6 +11,24 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin import Admin, expose
 from wtforms import HiddenField, IntegerField, Form
 from wtforms.validators import InputRequired
+
+
+# Flask commands
+@click.command('create-database')
+@with_appcontext
+def create_database():
+    db.drop_all()
+    db.create_all()
+
+    for _ in range(0, 100):
+        _cost = random.randrange(1, 1000)
+        _project = Project(
+            name=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)),
+            cost=_cost
+        )
+        db.session.add(_project)
+
+    db.session.commit()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '123456790'
@@ -19,6 +38,7 @@ app.config['DATABASE_FILE'] = 'sample_db.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + app.config['DATABASE_FILE']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+app.cli.add_command(create_database)
 
 
 # Flask views
@@ -92,21 +112,6 @@ class ProjectView(ModelView):
 
 admin = Admin(app, template_mode="bootstrap3")
 admin.add_view(ProjectView(Project, db.session))
-
-
-def build_sample_db():
-    db.drop_all()
-    db.create_all()
-
-    for _ in range(0, 100):
-        _cost = random.randrange(1, 1000)
-        _project = Project(
-            name=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)),
-            cost=_cost
-        )
-        db.session.add(_project)
-
-    db.session.commit()
 
 
 if __name__ == '__main__':
