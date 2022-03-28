@@ -99,8 +99,7 @@ class ProjectView(ModelView):
                 _update_mappings = [{'id': rowid, 'cost': cost} for rowid in ids]
                 db.session.bulk_update_mappings(Project, _update_mappings)
                 db.session.commit()
-                flash(f"Set cost for {len(ids)} recordess's' if len(ids) > 1 else ''} to {cost}.",
-                      category='info')
+                flash(f"Set cost for {len(ids)} record{'s' if len(ids) > 1 else ''} to {cost}.", category='info')
                 return redirect(url)
             else:
                 # Form didn't validate
