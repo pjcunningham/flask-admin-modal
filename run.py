@@ -113,13 +113,3 @@ class ProjectView(ModelView):
 admin = Admin(app, template_mode="bootstrap3")
 admin.add_view(ProjectView(Project, db.session))
 
-
-if __name__ == '__main__':
-    build_sample_db()
-
-    try:
-        port = int(sys.argv[1])
-    except (IndexError, ValueError):
-        port = 5000
-
-    app.run(port=port, debug=True)
